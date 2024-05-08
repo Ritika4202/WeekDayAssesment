@@ -1,1 +1,2 @@
 # WeekDayAssesment
+WeekDayAssesment is a responsive web page created using React,Material UI.Make sure to install material UI before importing it.The page has a list of jobs(data fetched from api) with filters to search jobs based on 'Location','Jobe Role','Salary Range','Minimum Experience','Company Name'.Each card in the application has a  full description about the company and the prerequistes to apply for that company.The cards have links to apply to the respective company.
