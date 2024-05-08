@@ -1,12 +1,12 @@
 
 import './App.css';
-import JobComponent from './components/JobComponent'
+import JobsComponent from './components/JobsComponent'
 
 function App() {
   return (
     <>
     <div className="App">
-      <JobComponent></JobComponent>
+      <JobsComponent></JobsComponent>
     </div>
     </>
     

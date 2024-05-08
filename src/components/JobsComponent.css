@@ -1,0 +1,11 @@
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.card-container .card {
+    flex: 1 0 30%;
+    margin: 1rem 0.5rem;
+    box-sizing: border-box;
+}
