@@ -17,13 +17,13 @@ function JobsComponent() {
     jobRole:"",
     minJdSalary:"",
   });
-
+  const salaryOptions = Array.from({length: 21}, (_, i) => `${i*5}-${(i+1)*5}`);
   useEffect(() => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const body = JSON.stringify({
-      "limit": 10,
+      "limit": 100,
       "offset": 0
     });
 
@@ -45,12 +45,17 @@ function JobsComponent() {
 
   useEffect(() => {
     let newFilteredJobs = jobs.filter((job) => {
+      let inRange = false;
+      if (filters.minJdSalary) {
+        const [min, max] = filters.minJdSalary.split('-');
+        inRange = job.minJdSalary >= min && job.minJdSalary <= max;
+      }
       return (
         (!filters.minExp || (job.minExp !== null && job.minExp?.toString().includes(filters.minExp))) &&
         (!filters.companyName || (job.companyName !== null && job.companyName?.toLowerCase().includes(filters.companyName.toLowerCase()))) &&
         (!filters.location || (job.location !== null && job.location?.toLowerCase().includes(filters.location.toLowerCase()))) &&
         (!filters.jobRole || (job.jobRole !== null && job.jobRole?.toLowerCase().includes(filters.jobRole.toLowerCase()))) &&
-        (!filters.minJdSalary || (job.minJdSalary !== null && job.minJdSalary?.toString().includes(filters.minJdSalary)))
+        (!filters.minJdSalary || (job.minJdSalary !== null && inRange))
       );
     });
     setFilteredJobs(newFilteredJobs);
@@ -76,75 +81,125 @@ function JobsComponent() {
   };
 
   const uniqueValues = (value) => {
-    return [...new Set(jobs.map((job) => job[value]).filter(x => x !== null && x !== undefined && x !== ''))];
-};
+    return [...new Set(jobs.map((job) => job[value] !== null ? job[value]  : null).filter(x => x !== null && x !== undefined && x !== ''))];
+  };
 
   
 
   return (
     <> 
-      <div className="filters">
+     <div className="filters">
+  <div className="filters-row">
+    <div className="filter">
       <Autocomplete
-    options={uniqueValues('minExp').map(String)}
-    value={filters.minExp || ''}
-    onInputChange={(event, newValue) => handleFilterChange('minExp', newValue)}
-    renderInput={(params) => <TextField {...params} label="Experience" />}
+        options={uniqueValues('minExp').map(String).sort((a, b) => a - b)}
+        value={filters.minExp || ''}
+        onInputChange={(event, newValue) => handleFilterChange('minExp', newValue)}
+        renderInput={(params) => <TextField {...params} label="Experience" />}
+        renderOption={(props, option) => <li {...props}>{option} years</li>}
+      />
+    </div>
+    <div className="filter">
+    <Autocomplete
+  options={salaryOptions}
+  value={filters.minJdSalary || ''}
+  onInputChange={(event, newValue) => handleFilterChange('minJdSalary', newValue)}
+  renderInput={(params) => <TextField {...params} label="Min Base Pay" />}
+  renderOption={(props, option) => <li {...props}>{option} lakhs</li>}
 />
-<Autocomplete
-    options={uniqueValues('minJdSalary').map(String)}
-    value={filters.minJdSalary || ''}
-    onInputChange={(event, newValue) => handleFilterChange('minJdSalary', newValue)}
-    renderInput={(params) => <TextField {...params} label="Min Base Pay" />}
-/>
-        <Autocomplete
-          options={uniqueValues('companyName')}
-          onInputChange={(event, newValue) => handleFilterChange('companyName', newValue)}
-          renderInput={(params) => <TextField {...params} label="Company Name" />}
-        />
-        <Autocomplete
-          options={uniqueValues('location')}
-          onInputChange={(event, newValue) => handleFilterChange('location', newValue)}
-          renderInput={(params) => <TextField {...params} label="Location" />}
-        />
-        <Autocomplete
-          options={uniqueValues('jobRole')}
-          onInputChange={(event, newValue) => handleFilterChange('jobRole', newValue)}
-          renderInput={(params) => <TextField {...params} label="Job Role" />}
-        />
-      
-      </div>
+    </div>
+    <div className="filter">
+      <Autocomplete
+        options={uniqueValues('companyName')}
+        onInputChange={(event, newValue) => handleFilterChange('companyName', newValue)}
+        renderInput={(params) => <TextField {...params} label="Company Name" />}
+      />
+    </div>
+  </div>
+  <div className="filters-row">
+    <div className="filter">
+      <Autocomplete
+        options={uniqueValues('location')}
+        onInputChange={(event, newValue) => handleFilterChange('location', newValue)}
+        renderInput={(params) => <TextField {...params} label="Location" />}
+      />
+    </div>
+    <div className="filter">
+      <Autocomplete
+        options={uniqueValues('jobRole')}
+        onInputChange={(event, newValue) => handleFilterChange('jobRole', newValue)}
+        renderInput={(params) => <TextField {...params} label="Job Role" />}
+      />
+    </div>
+  </div>
+</div>
+
       <div className="card-container">
-        {filteredJobs.map((job, index) => (
-          <div key={index}>
-            <Card sx={{ maxWidth: 345 }}>
-              <CardActionArea>
-                <CardContent>
-                <Typography gutterBottom variant="h5" component="div" 
-    style={{
-        whiteSpace: "nowrap", 
-        overflow: "hidden", 
-        textOverflow: "ellipsis"
-    }}
-    title={job.companyName || 'N/A'}
->Company Name: {job.companyName || 'N/A'}</Typography>
-                  <Typography gutterBottom variant="h5" component="div">Location: {job.location || 'N/A'}</Typography>
-                  <Typography gutterBottom variant="h5" component="div">Minimum Experience: {job.minExp || 'N/A'}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Job Details: {job.jobDetailsFromCompany?.substring(0, 100) || 'N/A'}...
-                    {job.jobDetailsFromCompany && <Button size="small" onClick={() => handleExpandClick(job)}>Show More</Button>}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-              {job.jdLink &&
-                <CardActions>
-                  <Button size="small" color="primary" >
-                    <a href={job.jdLink} target="_blank" rel="noopener noreferrer">EASY APPLY</a>
-                  </Button>
-                </CardActions>}
-            </Card>
-          </div>
-        ))}
-      </div>
+  {filteredJobs.map((job, index) => (
+    <div key={index}>
+      <Card  sx={{ maxWidth: 345 }}>
+        <CardActionArea>
+          <CardContent>
+            <Typography  component="div" 
+              style={{
+                fontFamily: "Lexend",
+                fontSize: '13px',
+    fontWeight: '600',
+    letterSpacing:' 1px',
+    marginBottom: '3px',
+    color: '#8b8b8b',
+                  whiteSpace: "nowrap", 
+                  overflow: "hidden", 
+                  textOverflow: "ellipsis"
+              }}
+              title={job.companyName || 'N/A'}
+            >
+             
+             <img src={job.logoUrl}  style={{ width: '30px', marginRight: '10px' }}/>
+              {job.companyName|| 'N/A'}
+        
+            </Typography>
+            <Typography  style={{
+                fontFamily: "Lexend",
+                fontSize: '14px',
+    lineHeight: '1.5',
+                
+              }} component="div">Location: {job.location.toUpperCase() || 'N/A'}</Typography>
+           
+            <Typography style={{
+                fontFamily: "Lexend",
+                
+              }}variant="body2" color="text.secondary">
+              <b>About Company:</b> {job.jobDetailsFromCompany?.substring(0, 100) || 'N/A'}...
+              {job.jobDetailsFromCompany && <Button size="small" onClick={() => handleExpandClick(job)}>View Job</Button>}
+            </Typography>
+            <Typography style={{
+                fontFamily: "Lexend",
+                fontSize: '13px',
+    fontWeight: '600',
+    letterSpacing: '1px',
+    marginbottom: '3px',
+    color: '#8b8b8b',
+              }}  component="div">Minimum Experience:</Typography>
+                <Typography style={{
+                fontFamily: "Lexend",
+                fontSize: '14px',
+    lineHeight: '1.5',
+              }}  component="div">{job.minExp ? job.minExp + ' years' : 'N/A'}</Typography>
+          </CardContent>
+        </CardActionArea>
+        {job.jdLink &&
+          <CardActions>
+            <Button size="small"  fullWidth style={{backgroundColor: 'rgb(85,239,196)', color: 'black',texfontFamily: "Lexend"}}>
+              <a href={job.jdLink} target="_blank" rel="noopener noreferrer" className="apply-link">⚡ Easy Apply</a>
+            </Button>
+          </CardActions>}
+          
+      </Card>
+    </div>
+  ))}
+</div>
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -152,9 +207,24 @@ function JobsComponent() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">{"Job Details"}</DialogTitle>
-        <DialogContent>
+        <DialogContent style={{
+                fontFamily: "Lexend",
+                
+              }}>
           <DialogContentText id="alert-dialog-description">
             {selectedJob?.jobDetailsFromCompany || 'N/A'}
+          </DialogContentText>
+          <DialogContentText id="alert-dialog-description">
+          <b>Job Role: </b> {selectedJob?.jobRole.toUpperCase()||'N/A'}
+          </DialogContentText>
+          <DialogContentText id="alert-dialog-description">
+          <b>Minimum Base Pay: </b> {selectedJob?.minJdSalary||'N/A'}
+          </DialogContentText>
+          <DialogContentText id="alert-dialog-description">
+          <b>Maximum Base Pay: </b> {selectedJob?.maxJdSalary||'N/A'}
+          </DialogContentText>
+          <DialogContentText id="alert-dialog-description">
+          <b>Maximum Experience: </b> {selectedJob?.maxExp||'N/A'}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -1,11 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 .card-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-}
+    height:100%;
+    
 
-.card-container .card {
-    flex: 1 0 30%;
+  }
+  
+  .card-container .card {
     margin: 1rem 0.5rem;
     box-sizing: border-box;
+    position: relative;
+    width:300px;
+    height:800px;
+  }
+  
+ 
+  
+  .apply-link {
+    text-decoration: none;
+    
+    color: white;
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+  }
+  .filters-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
 }
+.filters-row .filter {
+    flex: 1;
+    margin-right: 10px;
+}
+.filters-row .filter:last-child {
+    margin-right: 0;
+}
+
+
+ 
+  
