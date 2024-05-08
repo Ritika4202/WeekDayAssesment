@@ -137,20 +137,20 @@ function JobsComponent() {
       <div className="card-container">
   {filteredJobs.map((job, index) => (
     <div key={index}>
-      <Card  sx={{ maxWidth: 345 }}>
-        <CardActionArea>
+      <Card  sx={{ maxWidth: 345 }} className = "individual-card">
+        <CardActionArea classname="card-action-area"style={{height:'300px',}}>
           <CardContent>
             <Typography  component="div" 
               style={{
                 fontFamily: "Lexend",
-                fontSize: '13px',
-    fontWeight: '600',
-    letterSpacing:' 1px',
-    marginBottom: '3px',
-    color: '#8b8b8b',
-                  whiteSpace: "nowrap", 
-                  overflow: "hidden", 
-                  textOverflow: "ellipsis"
+                fontSize: '20px',
+                fontWeight: '600',
+                letterSpacing:' 1px',
+                marginBottom: '3px',
+                color: '#8b8b8b',
+                whiteSpace: "nowrap", 
+                overflow: "hidden", 
+                textOverflow: "ellipsis"
               }}
               title={job.companyName || 'N/A'}
             >
@@ -162,7 +162,7 @@ function JobsComponent() {
             <Typography  style={{
                 fontFamily: "Lexend",
                 fontSize: '14px',
-    lineHeight: '1.5',
+                lineHeight: '1.5',
                 
               }} component="div">Location: {job.location.toUpperCase() || 'N/A'}</Typography>
            
@@ -170,27 +170,27 @@ function JobsComponent() {
                 fontFamily: "Lexend",
                 
               }}variant="body2" color="text.secondary">
-              <b>About Company:</b> {job.jobDetailsFromCompany?.substring(0, 100) || 'N/A'}...
+              <b>About Company:</b> {job.jobDetailsFromCompany?.substring(0, 200) || 'N/A'}...
               {job.jobDetailsFromCompany && <Button size="small" onClick={() => handleExpandClick(job)}>View Job</Button>}
             </Typography>
             <Typography style={{
                 fontFamily: "Lexend",
                 fontSize: '13px',
-    fontWeight: '600',
-    letterSpacing: '1px',
-    marginbottom: '3px',
-    color: '#8b8b8b',
+                fontWeight: '600',
+                letterSpacing: '1px',
+                marginbottom: '3px',
+                color: '#8b8b8b',
               }}  component="div">Minimum Experience:</Typography>
                 <Typography style={{
                 fontFamily: "Lexend",
                 fontSize: '14px',
-    lineHeight: '1.5',
+                lineHeight: '1.5',
               }}  component="div">{job.minExp ? job.minExp + ' years' : 'N/A'}</Typography>
           </CardContent>
-        </CardActionArea>
+        </CardActionArea >
         {job.jdLink &&
-          <CardActions>
-            <Button size="small"  fullWidth style={{backgroundColor: 'rgb(85,239,196)', color: 'black',texfontFamily: "Lexend"}}>
+          <CardActions style={{justifyContent: "center"}}>
+            <Button size="large"  fullWidth style={{backgroundColor: 'rgb(85,239,196)', color: 'black',texfontFamily: "Lexend"}}>
               <a href={job.jdLink} target="_blank" rel="noopener noreferrer" className="apply-link">⚡ Easy Apply</a>
             </Button>
           </CardActions>}
@@ -218,13 +218,14 @@ function JobsComponent() {
           <b>Job Role: </b> {selectedJob?.jobRole.toUpperCase()||'N/A'}
           </DialogContentText>
           <DialogContentText id="alert-dialog-description">
-          <b>Minimum Base Pay: </b> {selectedJob?.minJdSalary||'N/A'}
+          <b>Minimum Base Pay: </b> {selectedJob?.minJdSalary ?selectedJob?.minJdSalary + ' lakhs':'N/A'}
           </DialogContentText>
           <DialogContentText id="alert-dialog-description">
-          <b>Maximum Base Pay: </b> {selectedJob?.maxJdSalary||'N/A'}
+          <b>Maximum Base Pay: </b> {selectedJob?.maxJdSalary ?selectedJob?.maxJdSalary + ' lakhs':'N/A'}
           </DialogContentText>
           <DialogContentText id="alert-dialog-description">
-          <b>Maximum Experience: </b> {selectedJob?.maxExp||'N/A'}
+          <b>Maximum Experience: </b>
+          {selectedJob?.maxExp ? selectedJob?.maxExp + ' years' : 'N/A'}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
